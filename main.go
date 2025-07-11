@@ -70,5 +70,4 @@ func main() {
 	unique := f.getCountUniqueFileTypes(files)
 
 	f.printExtensionTable(unique)
-
 }
