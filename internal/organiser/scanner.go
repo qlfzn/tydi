@@ -8,6 +8,12 @@ import (
 
 // Create struct for File
 type File struct {
+	CurrDir string
+}
+
+// this is just experimentally created by me
+type UniqueFile interface {
+	GetUniqueFile([]os.DirEntry, string) map[string]int
 }
 
 func (f *File) GetAllFilesInDir(path string) ([]os.DirEntry, error) {

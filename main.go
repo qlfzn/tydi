@@ -8,14 +8,17 @@ import (
 )
 
 func main() {
-	f := organiser.File{}
+	f := organiser.File{
+		CurrDir: "/Users/qlfzn/Downloads/test_run/",
+	}
 
-	files, err := f.GetAllFilesInDir("/Users/qlfzn/Downloads/")
+	files, err := f.GetAllFilesInDir(f.CurrDir)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	unique := f.GetCountUniqueFileTypes(files)
+	// unique := f.GetCountUniqueFileTypes(files)
+	unique := f.GroupByPrefix(files)
 
 	fmt.Println("Welcome, user! Let's organise with tydi")
 	f.ShowExtCount(unique)
