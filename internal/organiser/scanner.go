@@ -3,6 +3,9 @@ package organiser
 import (
 	"fmt"
 	"os"
+	"sort"
+
+	"github.com/olekukonko/tablewriter"
 )
 
 // Create struct for File
@@ -21,13 +24,22 @@ func (f *File) GetAllFilesInDir(path string) ([]os.DirEntry, error) {
 }
 
 func (f *File) ShowUniqueCount(unique map[string]int) {
-	fmt.Printf("+------------+-------+\n")
-	fmt.Printf("| %-10s | %-5s |\n", "Pattern", "Count")
-	fmt.Printf("+------------+-------+\n")
+	headers := []string{"Group", "Count"}
 
-	for ext, count := range unique {
-		fmt.Printf("| %-10s | %5d |\n", ext, count)
+	table := tablewriter.NewWriter(os.Stdout)
+	table.Header(headers)
+
+	// Optional: sort keys for consistent output
+	keys := make([]string, 0, len(unique))
+	for k := range unique {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, key := range keys {
+		row := []string{key, fmt.Sprintf("%d", unique[key])}
+		table.Append(row)
 	}
 
-	fmt.Printf("+------------+-------+\n")
+	table.Render()
 }
