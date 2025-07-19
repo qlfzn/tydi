@@ -17,7 +17,7 @@ func (f *File) GroupByExtension(files []os.DirEntry) map[string]int {
 			continue
 		}
 
-		ext := filepath.Ext(f.Name())
+		ext := strings.ToUpper(strings.TrimPrefix(filepath.Ext(f.Name()), "."))
 		extResult[ext]++
 	}
 
@@ -45,4 +45,12 @@ func (f *File) GroupByPrefix(files []os.DirEntry) map[string]int {
 	return prefixResult
 }
 
-// TODO: implement group by date added
+func (f *File) GetFolderPath(pathPrefix string, fileGroups map[string]int) []string {
+	var keyGroups []string
+
+	for key := range fileGroups {
+		keyGroups = append(keyGroups, pathPrefix+key+"/")
+	}
+
+	return keyGroups
+}
