@@ -25,7 +25,6 @@ var header = `
 type TerminalUI struct {
 	Dir     string
 	Group   string
-	DryRun  bool
 	Folders []string
 }
 
@@ -36,10 +35,6 @@ func (t *TerminalUI) PrintHeader() {
 func (t *TerminalUI) PrintBanner() {
 	fmt.Printf("  ► Organising directory: %s\n", t.Dir)
 	fmt.Printf("  ◨ Grouping by: %s\n", t.Group)
-
-	if t.DryRun {
-		fmt.Println("  (!) Dry run enabled — no files will be moved")
-	}
 }
 
 func (t *TerminalUI) PrintGroupTable(unique map[string][]os.DirEntry) {
@@ -64,6 +59,6 @@ func (t *TerminalUI) PrintGroupTable(unique map[string][]os.DirEntry) {
 
 func (t *TerminalUI) PrintDestinationPath(folderGroups []string) {
 	for _, folder := range t.Folders {
-		fmt.Printf("\n # Moving files into: %s", folder)
+		fmt.Printf("\n # Destination path: %s", folder)
 	}
 }

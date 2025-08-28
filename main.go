@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/qlfzn/tydi/cmd"
@@ -33,7 +36,6 @@ func main() {
 	tui := ui.TerminalUI{
 		Dir:     cliConf.InputPath,
 		Group:   cliConf.GroupBy,
-		DryRun:  true,
 		Folders: folderGroup,
 	}
 
@@ -42,8 +44,18 @@ func main() {
 	tui.PrintGroupTable(groupResult)
 	tui.PrintDestinationPath(folderGroup)
 
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("\n\n Proceed with moving files? (y/N): ")
+	confirm, _ := reader.ReadString('\n')
+	confirm = strings.TrimSpace(strings.ToLower(confirm))
+
+	if confirm != "y" && confirm != "yes" {
+		fmt.Println("\n No files were moved.")
+		return
+	}
+
 	// move files
-	fmt.Println("\nStarting moving files")
+	fmt.Println("\n  Starting moving files")
 	startTime := time.Now()
 
 	err = f.MoveFiles(f.DirPath, groupResult)
@@ -52,5 +64,5 @@ func main() {
 	}
 
 	elapsed := time.Since(startTime)
-	fmt.Printf("\nFile organiser took %s\n", elapsed)
+	fmt.Printf("\n  File organiser took %s\n", elapsed)
 }

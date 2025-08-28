@@ -52,7 +52,7 @@ func (f *File) groupByPrefix(files []os.DirEntry) map[string][]os.DirEntry {
 			continue
 		}
 
-		index := strings.IndexRune(f.Name(), '_')
+		index := strings.IndexAny(f.Name(), "_- ")
 		if index == -1 {
 			continue
 		}
