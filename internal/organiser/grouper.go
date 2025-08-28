@@ -6,10 +6,27 @@ import (
 	"strings"
 )
 
-// function type for one behaviour, different implementations
-type GroupingStrategy func([]os.DirEntry) map[string]int
+// Register functions
+type GroupFunc func(file []os.DirEntry) map[string]int
 
-func (f *File) GroupByExtension(files []os.DirEntry) map[string]int {
+var groups = map[string]GroupFunc{
+	"extension": func(files []os.DirEntry) map[string]int {
+		return new(File).groupByExtension(files)
+	},
+	"prefix": func(files []os.DirEntry) map[string]int {
+		return new(File).groupByPrefix(files)
+	},
+}
+
+// Main functino for group file
+func (f *File) GroupFiles(fileEntries []os.DirEntry, groupMethod string) map[string]int {
+	fn := groups[groupMethod]
+	return fn(fileEntries)
+}
+
+// Group files by unique extensions
+// Returns all extensions and their counts
+func (f *File) groupByExtension(files []os.DirEntry) map[string]int {
 	extResult := make(map[string]int)
 
 	for _, f := range files {
@@ -24,10 +41,11 @@ func (f *File) GroupByExtension(files []os.DirEntry) map[string]int {
 	return extResult
 }
 
-func (f *File) GroupByPrefix(files []os.DirEntry) map[string]int {
+// Group files by unique prefix (string before underscore in filename is considered prefix)
+// Returns all prefixes and their counts
+func (f *File) groupByPrefix(files []os.DirEntry) map[string]int {
 	prefixResult := make(map[string]int)
 
-	// string before underscore is prefix
 	for _, f := range files {
 		if f.IsDir() {
 			continue
@@ -45,6 +63,8 @@ func (f *File) GroupByPrefix(files []os.DirEntry) map[string]int {
 	return prefixResult
 }
 
+// Set destination path for grouped files
+// Returns all defined destination paths
 func (f *File) GetFolderPath(pathPrefix string, fileGroups map[string]int) []string {
 	var keyGroups []string
 

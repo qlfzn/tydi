@@ -23,18 +23,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var strategy organiser.GroupingStrategy
-
-	switch cliConf.GroupBy {
-	case "extension":
-		strategy = f.GroupByExtension
-	case "prefix":
-		strategy = f.GroupByPrefix
-	default:
-		log.Fatalf("unknown grouping strategy: %s", cliConf.GroupBy)
-	}
-
-	groupResult := strategy(dirEntries)
+	groupResult := f.GroupFiles(dirEntries, f.GroupBy)
 
 	folderGroup := f.GetFolderPath(f.DirPath, groupResult)
 

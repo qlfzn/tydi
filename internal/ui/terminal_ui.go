@@ -20,7 +20,6 @@ var header = `
                   ░██               
             ░███████                
                                     
-
 `
 
 type TerminalUI struct {
@@ -38,8 +37,8 @@ func (t *TerminalUI) PrintBanner() {
 	fmt.Printf("  ► Organising directory: %s\n", t.Dir)
 	fmt.Printf("  ◨ Grouping by: %s\n", t.Group)
 
-	if t.DryRun == true {
-		fmt.Println(" (!) Dry run enabled — no files will be moved")
+	if t.DryRun {
+		fmt.Println("  (!) Dry run enabled — no files will be moved")
 	}
 }
 
