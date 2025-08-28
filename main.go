@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"time"
 
 	"github.com/qlfzn/tydi/cmd"
 	"github.com/qlfzn/tydi/internal/organiser"
@@ -39,4 +41,16 @@ func main() {
 	tui.PrintBanner()
 	tui.PrintGroupTable(groupResult)
 	tui.PrintDestinationPath(folderGroup)
+
+	// move files
+	fmt.Println("\nStarting moving files")
+	startTime := time.Now()
+
+	err = f.MoveFiles(f.DirPath, groupResult)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	elapsed := time.Since(startTime)
+	fmt.Printf("\nFile organiser took %s\n", elapsed)
 }

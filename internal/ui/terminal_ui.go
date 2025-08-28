@@ -42,7 +42,7 @@ func (t *TerminalUI) PrintBanner() {
 	}
 }
 
-func (t *TerminalUI) PrintGroupTable(unique map[string]int) {
+func (t *TerminalUI) PrintGroupTable(unique map[string][]os.DirEntry) {
 	headers := []string{"Group", "Count"}
 
 	table := tablewriter.NewWriter(os.Stdout)
@@ -55,7 +55,7 @@ func (t *TerminalUI) PrintGroupTable(unique map[string]int) {
 	sort.Strings(keys)
 
 	for _, key := range keys {
-		row := []string{key, fmt.Sprintf("%d", unique[key])}
+		row := []string{key, fmt.Sprintf("%d", len(unique[key]))}
 		table.Append(row)
 	}
 
