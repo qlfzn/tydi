@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 )
 
-func (f *File) MoveFiles(baseDir string, fileGroup map[string][]os.DirEntry) error {
+func (f *FileGroup) MoveFiles(baseDir string, fileGroup map[string][]os.DirEntry) error {
 	for group, files := range fileGroup {
 		destDir := filepath.Join(baseDir, group)
 

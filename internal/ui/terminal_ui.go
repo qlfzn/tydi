@@ -1,11 +1,13 @@
 package ui
 
 import (
+	"bufio"
 	"fmt"
 	"os"
-	"sort"
+	"strings"
 
 	"github.com/olekukonko/tablewriter"
+	"github.com/qlfzn/tydi/internal/organiser"
 )
 
 var header = `
@@ -22,43 +24,50 @@ var header = `
                                     
 `
 
-type TerminalUI struct {
-	Dir     string
-	Group   string
-	Folders []string
+type TerminalUI struct {}
+
+func (t *TerminalUI) CreateUI(result *organiser.OrganiseResult) {
+	t.PrintHeader()
+	t.PrintBanner(result.Dir, result.GroupBy)
+	t.PrintGroupTable(result.Groups)
+	t.PrintDestinationPath(result.DestPaths)
+	t.Prompt()
 }
 
 func (t *TerminalUI) PrintHeader() {
 	fmt.Println(header)
 }
 
-func (t *TerminalUI) PrintBanner() {
-	fmt.Printf("  ► Organising directory: %s\n", t.Dir)
-	fmt.Printf("  ◨ Grouping by: %s\n", t.Group)
+func (t *TerminalUI) PrintBanner(dir string, groupBy string) {
+	fmt.Printf("  ► Organising directory: %s\n", dir)
+	fmt.Printf("  ◨ Grouping by: %s\n", groupBy)
 }
 
-func (t *TerminalUI) PrintGroupTable(unique map[string][]os.DirEntry) {
-	headers := []string{"Group", "Count"}
-
+func (t *TerminalUI) PrintGroupTable(groups map[string][]os.DirEntry) {
 	table := tablewriter.NewWriter(os.Stdout)
+	headers := []string{"Group", "Count"}
 	table.Header(headers)
 
-	keys := make([]string, 0, len(unique))
-	for k := range unique {
-		keys = append(keys, k)
+	for name, g := range groups {
+		table.Append([]string{name, fmt.Sprintf("%d", len(g))})
 	}
-	sort.Strings(keys)
-
-	for _, key := range keys {
-		row := []string{key, fmt.Sprintf("%d", len(unique[key]))}
-		table.Append(row)
-	}
-
 	table.Render()
 }
 
 func (t *TerminalUI) PrintDestinationPath(folderGroups []string) {
-	for _, folder := range t.Folders {
+	for _, folder := range folderGroups {
 		fmt.Printf("\n # Destination path: %s", folder)
+	}
+}
+
+func (t *TerminalUI) Prompt() {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("\n\nProceed with moving files? (y/N): ")
+	confirm, _ := reader.ReadString('\n')
+	confirm = strings.TrimSpace(strings.ToLower(confirm))
+
+	if confirm != "y" && confirm != "yes" {
+		fmt.Println("\nNo files were moved.")
+		os.Exit(1)
 	}
 }
