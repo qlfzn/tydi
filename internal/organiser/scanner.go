@@ -10,7 +10,6 @@ import (
 type FileGroup struct {
 	dirPath string
 	groupBy string
-	batch map[string][]os.DirEntry
 }
 
 // Create new file group instance
@@ -18,7 +17,7 @@ func NewFileGroup(dirPath string, groupBy string) (*FileGroup, error) {
 	cleanedPath := filepath.Clean(dirPath)
 
 	if _, err := os.Stat(dirPath); os.IsNotExist(err) {
-	return nil, fmt.Errorf("path does not exist: %s", err)
+		return nil, fmt.Errorf("path does not exist: %s", err)
 	}
 
 	return &FileGroup{
@@ -27,20 +26,23 @@ func NewFileGroup(dirPath string, groupBy string) (*FileGroup, error) {
 	}, nil
 }
 
-// Organise directory entries 
+// Organise directory entries
 // Returns defined folder groups and their destination path
-func (f *FileGroup) Organise() ([]string, error) {
+func (f *FileGroup) Organise() (*OrganiseResult, error) {
 	dirEntries, err := f.getAllFilesInDir(f.dirPath)
 	if err != nil {
 		return nil, err
 	}
 
 	groupResult := f.groupFiles(dirEntries, f.groupBy)
-	f.batch = groupResult
-
 	folderGroup := f.getFolderPath(f.dirPath, groupResult)
 
-	return folderGroup, nil
+	return &OrganiseResult{
+		Dir:       f.dirPath,
+		GroupBy:   f.groupBy,
+		Groups:    groupResult,
+		DestPaths: folderGroup,
+	}, nil
 }
 
 func (f *FileGroup) getAllFilesInDir(path string) ([]os.DirEntry, error) {
