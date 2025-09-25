@@ -14,35 +14,28 @@ import (
 )
 
 func main() {
-	// initialise entrypoint
 	cliConf := cmd.ParseCLIArgs()
 
-	// create file instance
-	f := organiser.File{
-		DirPath: cliConf.InputPath,
-		GroupBy: cliConf.GroupBy,
-	}
-
-	dirEntries, err := f.GetAllFilesInDir(f.DirPath)
+	f, err := organiser.NewFileGroup(cliConf.InputPath, cliConf.GroupBy)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	groupResult := f.GroupFiles(dirEntries, f.GroupBy)
-
-	folderGroup := f.GetFolderPath(f.DirPath, groupResult)
-
-	// initialise UI props
-	tui := ui.TerminalUI{
-		Dir:     cliConf.InputPath,
-		Group:   cliConf.GroupBy,
-		Folders: folderGroup,
+	folders, err := f.Organise()
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	tui.PrintHeader()
-	tui.PrintBanner()
-	tui.PrintGroupTable(groupResult)
-	tui.PrintDestinationPath(folderGroup)
+	// tui := ui.TerminalUI{
+	// 	Dir:     cliConf.InputPath,
+	// 	Group:   cliConf.GroupBy,
+	// 	Folders: folders,
+	// }
+
+	// tui.PrintHeader()
+	// tui.PrintBanner()
+	// tui.PrintGroupTable(groupResult)
+	// tui.PrintDestinationPath(folders)
 
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("\n\n Proceed with moving files? (y/N): ")
@@ -54,7 +47,6 @@ func main() {
 		return
 	}
 
-	// move files
 	fmt.Println("\n  Starting moving files")
 	startTime := time.Now()
 
